@@ -31,8 +31,8 @@
             <li class="nav-item"><a class="nav-link" href="{{ route('admin.audit') }}">Audit Transactions</a></li>
             <!-- Staff Accounts - Only visible to admins -->
             <li class="nav-item"><a class="nav-link" href="{{ route('admin.users') }}">Staff Accounts</a></li>
-
           @endif
+
           @if(auth()->user()->role === 'staff')
             <!-- Stock Ins - Only visible to staffs -->
             <li class="nav-item"><a class="nav-link" href="{{ route('staff.stock-in.index') }}">Stock In</a></li>
@@ -41,6 +41,7 @@
             <!-- Z-Read Reports - Only visible to staffs -->
             <li class="nav-item"><a class="nav-link" href="{{ route('staff.sales.zread') }}">Z-Read Report</a></li>
           @endif
+          
           <li class="nav-item dropdown">
             <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
               {{ auth()->user()->name }} </a>
