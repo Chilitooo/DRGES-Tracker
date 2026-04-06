@@ -78,7 +78,7 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Expose Apache port
 EXPOSE 80
 
-CMD sleep 15 && \
+CMD sleep 30 && \
     php artisan storage:link --force || true && \
     php artisan config:clear && \
     php artisan cache:clear && \
