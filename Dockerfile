@@ -26,16 +26,14 @@ WORKDIR /app
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Copy project files
+COPY . .
+
 # Install PHP dependencies
-COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
 # Install Node dependencies and build Vite assets
-COPY package*.json ./
 RUN npm install
-
-# Copy project files
-COPY . .
 
 # Build Vite assets
 RUN npm run build
