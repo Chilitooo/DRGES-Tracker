@@ -60,7 +60,7 @@ RUN apt-get update && apt-get install -y \
 RUN a2enmod rewrite
 
 # Set Apache document root to Laravel public folder
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
@@ -71,6 +71,9 @@ WORKDIR /var/www/html
 # Copy built app from build stage
 COPY --from=build /app /var/www/html
 
+# ✅ .env baked into image
+COPY .env /var/www/html/.env
+
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
@@ -78,11 +81,4 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Expose Apache port
 EXPOSE 80
 
-CMD sleep 30 && \
-    php artisan storage:link --force || true && \
-    php artisan config:clear && \
-    php artisan cache:clear && \
-    php artisan route:clear && \
-    php artisan view:clear && \
-    php artisan migrate --force || true && \
-    apache2-foreground
+CMD ["/bin/sh", "-c", "php artisan storage:link --force || true && php artisan config:clear && php artisan migrate --force && php artisan cache:clear && php artisan route:clear && php artisan view:clear && php artisan db:seed --force && apache2-foreground"]

@@ -5,26 +5,13 @@ services:
     ports:
       - "8000:80"
     depends_on:
-      - db
-    env_file:
-      - .env
+      db:
+        condition: service_healthy   # ✅ waits until MySQL is truly ready
+    restart: on-failure
     environment:
-      APACHE_DOCUMENT_ROOT: /var/www/html/public
-      APP_NAME: "DRGES Sales Management"
-      APP_ENV: production
-      APP_KEY: base64:OYQQv+VvGL7T+zlLCS+xxyGOoOxMxiYMDqpZS/DO5cE=
-      APP_DEBUG: false
-      APP_URL: http://localhost:8000
-      DB_CONNECTION: mysql
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_DATABASE: drges_db
-      DB_USERNAME: drges_user
-      DB_PASSWORD: secret
-      SESSION_DRIVER: database
-      QUEUE_CONNECTION: database
-      CACHE_STORE: database
-
+      ADMIN_EMAIL: admin@carsu.edu.ph
+      ADMIN_NAME: Admin User
+      ADMIN_PASSWORD: password
 
   db:
     image: mysql:8.0
@@ -39,6 +26,12 @@ services:
       - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 30s       # check every seconds
+      timeout: 30s        # wait max seconds for response
+      retries: 10        # try 10 times before giving up
+      start_period: 30s  # give MySQL 30s to initialize first
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -50,7 +43,8 @@ services:
       PMA_HOST: db
       MYSQL_ROOT_PASSWORD: root
     depends_on:
-      - db
+      db:
+        condition: service_healthy   # ✅ phpmyadmin also waits for MySQL
 
 volumes:
   db_data:
