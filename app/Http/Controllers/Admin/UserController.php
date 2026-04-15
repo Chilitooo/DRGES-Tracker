@@ -17,6 +17,13 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+        // ADD THIS VALIDATION BLOCK
+        $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email',
+            'password' => 'required|min:8|confirmed', // 'confirmed' checks password_confirmation field
+        ]);
+        
         User::create([
             'name' => $request->name,
             'email' => $request->email,

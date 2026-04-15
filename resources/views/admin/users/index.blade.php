@@ -106,12 +106,19 @@
 
                     <div class="mb-3">
                         <label>Password</label>
-                        <input type="password" name="password" class="form-control" required>
+                        <input type="password" name="password" class="form-control {{ $errors->has('password') ? 'is-invalid' : '' }}" required>
+                        @error ('password')
+                            <div class="invalid-feedback">⚠️ {{ $message }}</div>
+                        @enderror
+
                     </div>
 
                     <div class="mb-3">
                         <label>Confirm Password</label>
-                        <input type="password" name="password_confirmation" class="form-control" required>
+                        <input type="password" name="password_confirmation" class="form-control {{ $errors->has('password_confirmation') ? 'is-invalid' : '' }}" required>
+                        @error ('password_confirmation')
+                            <div class="invalid-feedback">⚠️ {{ $message }}</div>
+                        @enderror
                     </div>
 
                 </div>
@@ -125,5 +132,15 @@
         </div>
     </div>
 </div>
+
+{{-- Reopen modal if there are validation errors --}}
+@if ($errors->any())
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var modal = new bootstrap.Modal(document.getElementById('createStaffModal'));
+        modal.show();
+    });
+</script>
+@endif
 
 @endsection
